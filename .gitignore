@@ -1,0 +1,332 @@
+# ============================================
+# RSL10-Arduino I2C Communication
+# .gitignore file
+# ============================================
+
+# ============================================
+# RSL10 / Eclipse IDE
+# ============================================
+
+# Eclipse project files
+.metadata/
+.settings/
+.project
+.cproject
+.pydevproject
+*.prefs
+
+# Build outputs
+Debug/
+Release/
+build/
+bin/
+*.o
+*.d
+*.elf
+*.hex
+*.bin
+*.map
+*.lst
+*.sym
+*.axf
+
+# RSL10 specific
+*.launch
+*.jlink
+*.JLink
+
+# SEGGER files
+__pycache__/
+*.pyc
+
+# ============================================
+# Arduino IDE
+# ============================================
+
+# Compiled files
+*.hex
+*.eep
+*.elf
+*.lss
+*.sym
+*.a
+
+# Build directory
+build-*/
+*.build/
+
+# Arduino IDE auto-generated files
+.vscode/
+*.code-workspace
+
+# ============================================
+# GCC / Compiler
+# ============================================
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (Linux)
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# ============================================
+# OS Specific
+# ============================================
+
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+*.stackdump
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+.directory
+.fuse_hidden*
+.nfs*
+
+# ============================================
+# Editors / IDEs
+# ============================================
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.*.sw?
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# JetBrains IDEs (CLion, etc.)
+.idea/
+*.iml
+*.iws
+cmake-build-*/
+
+# ============================================
+# Documentation
+# ============================================
+
+# Generated documentation
+docs/_build/
+docs/.doctrees/
+*.pdf
+!docs/*.pdf
+
+# LaTeX
+*.aux
+*.log
+*.toc
+*.out
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+
+# ============================================
+# Logs and Databases
+# ============================================
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ============================================
+# Temporary Files
+# ============================================
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.cache
+*.pid
+
+# Backup files
+*~
+*.orig
+*.rej
+
+# ============================================
+# Testing / Coverage
+# ============================================
+
+# Test coverage
+coverage/
+*.gcov
+*.gcda
+*.gcno
+
+# ============================================
+# Dependencies / Packages
+# ============================================
+
+# Node modules (if using any JavaScript tools)
+node_modules/
+npm-debug.log
+
+# Python virtual environment (if any)
+venv/
+ENV/
+env/
+
+# ============================================
+# Project Specific
+# ============================================
+
+# Custom build directories
+output/
+dist/
+
+# Hardware test results
+test_results/
+*.csv
+
+# Oscilloscope/Logic analyzer captures
+*.sal
+*.logicdata
+
+# Serial port logs
+serial_*.txt
+
+# User-specific configuration
+config.local
+secrets.h
+*.secret
+
+# ============================================
+# Version Control
+# ============================================
+
+# Git
+*.orig
+.git/
+
+# SVN
+.svn/
+
+# Mercurial
+.hg/
+
+# ============================================
+# Archives
+# ============================================
+
+# Compressed files
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# But keep release archives if in a releases folder
+!releases/*.zip
+!releases/*.tar.gz
+
+# ============================================
+# Security
+# ============================================
+
+# Private keys
+*.pem
+*.key
+*.cert
+*.p12
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# ============================================
+# Miscellaneous
+# ============================================
+
+# Patches
+*.patch
+*.diff
+
+# Package files
+*.deb
+*.rpm
+
+# ISO images
+*.iso
+
+# Virtual machine images
+*.vdi
+*.vmdk
+
+# Core dumps
+core
+core.*
+*.core
+
+# ============================================
+# Keep These Files (Exceptions)
+# ============================================
+
+# Force include important files
+!.gitignore
+!README.md
+!LICENSE
+!Makefile
+
+# Keep example configurations
+!config.example
+!*.template
+
+# ============================================
+# End of .gitignore
+# ============================================
