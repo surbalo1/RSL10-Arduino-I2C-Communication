@@ -1,171 +1,301 @@
-# RSL10-Arduino-I2C-Communication
+<div align="center">
 
-Reliable bidirectional I2C communication between ON Semiconductor RSL10-002GEVB (master) and Arduino Nano (slave) using software I2C bit-bang implementation.
+# 🔌 RSL10-Arduino I2C Communication
 
-## Features
+[![C](https://img.shields.io/badge/C-A8B9CC?style=for-the-badge&logo=c&logoColor=black)](https://en.wikipedia.org/wiki/C_(programming_language))
+[![Arduino](https://img.shields.io/badge/Arduino-00979D?style=for-the-badge&logo=arduino&logoColor=white)](https://arduino.cc)
+[![RSL10](https://img.shields.io/badge/ON_Semi_RSL10-00A651?style=for-the-badge&logo=onsemi&logoColor=white)](https://www.onsemi.com/products/wireless-connectivity/bluetooth-low-energy/rsl10)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-- Software I2C implementation on RSL10 (bit-bang GPIO control)
-- Hardware I2C on Arduino Nano
-- Bidirectional data transfer with acknowledgment
-- 3.3V logic level compatible
-- Error handling with retry logic and status codes
-- Tested and verified, 90%+ success rate
-- Complete documentation including wiring, troubleshooting, and examples
+**Reliable bidirectional I2C communication between RSL10 (master) and Arduino (slave) using software I2C bit-bang implementation.**
 
-## Hardware Requirements
+*Embedded systems • Low-level protocols • 3.3V compatible • 90%+ success rate*
+
+</div>
+
+---
+
+## 📋 Overview
+
+This project implements reliable I2C communication between an **ON Semiconductor RSL10-002GEVB** (master) and **Arduino Nano** (slave). The RSL10 uses a software I2C bit-bang implementation, allowing flexible GPIO selection and reliable communication at 30-40 kHz.
+
+### 🎯 Key Features
+
+| Feature | Description |
+|---------|-------------|
+| **🔧 Software I2C** | Bit-bang implementation on RSL10 GPIO |
+| **⚙️ Hardware I2C** | Native Wire library on Arduino |
+| **↔️ Bidirectional** | Data transfer with acknowledgment |
+| **⚡ 3.3V Logic** | Direct connection without level shifters |
+| **🔄 Error Handling** | Retry logic and status codes |
+| **✅ 90%+ Success** | Tested and verified reliability |
+
+---
+
+## 🏗️ System Architecture
+
+```mermaid
+sequenceDiagram
+    participant RSL10 as RSL10 (Master)
+    participant I2C as I2C Bus
+    participant Arduino as Arduino (Slave)
+
+    Note over RSL10,Arduino: Address: 0x55
+
+    loop Communication Cycle
+        RSL10->>I2C: START condition
+        RSL10->>I2C: Send address + W (0xAA)
+        I2C->>Arduino: Address match
+        Arduino-->>I2C: ACK
+        RSL10->>I2C: Send data byte
+        Arduino-->>I2C: ACK
+        RSL10->>I2C: STOP condition
+        
+        Note over Arduino: Process: data + 1
+        
+        RSL10->>I2C: START condition
+        RSL10->>I2C: Send address + R (0xAB)
+        Arduino-->>I2C: ACK + response byte
+        RSL10->>I2C: NACK + STOP
+        
+        Note over RSL10: Verify: response == data + 1
+    end
+```
+
+---
+
+## 🛠️ Hardware Requirements
 
 ### Components
-- RSL10-002GEVB board
-- Arduino Nano (3.3V or 5V with level shifting)
-- 2× 2.7kΩ resistors for I2C pull-ups
-- Jumper wires
-- Breadboard (optional)
-- USB cables
+
+| Component | Description | Quantity |
+|-----------|-------------|:--------:|
+| **RSL10-002GEVB** | ON Semiconductor dev board | 1 |
+| **Arduino Nano** | 3.3V or 5V with level shifting | 1 |
+| **Resistors** | 2.7kΩ for I2C pull-ups | 2 |
+| **Jumper Wires** | Male-to-male | 4+ |
+| **Breadboard** | For prototyping | 1 |
+
+### Pin Connections
+
+<div align="center">
+
+| RSL10 Pin | Signal | Arduino Pin | Notes |
+|:---------:|:------:|:-----------:|-------|
+| **3.3V** | VCC | **3.3V** | ⚠️ Use 3.3V only |
+| **GND** | Ground | **GND** | Common ground |
+| **DIO2** | SDA | **A4** | + 2.7kΩ pull-up |
+| **DIO3** | SCL | **A5** | + 2.7kΩ pull-up |
+
+</div>
 
 ### Wiring Diagram
 
 ```
-
-RSL10-002GEVB                        Arduino Nano
-3.3V ──────────┬──────────────────── 3.3V
-DIO2 (SDA) ────┤2.7kΩ├────────────── A4 (SDA)
-DIO3 (SCL) ────┬─────────────── A5 (SCL)
-GND ───────────┴──────────────────── GND
-
+┌─────────────────────────────────────────────────────────────────┐
+│                        I2C BUS WIRING                           │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│    RSL10-002GEVB                         Arduino Nano           │
+│    ┌──────────┐                          ┌──────────┐           │
+│    │      3.3V├────────────────────────────┤3.3V      │           │
+│    │          │                          │          │           │
+│    │     DIO2 ├────┬───────────────────┬───┤A4 (SDA) │           │
+│    │    (SDA) │    │                   │   │          │           │
+│    │          │   ┌┴┐                  │   │          │           │
+│    │          │   │ │ 2.7kΩ            │   │          │           │
+│    │          │   └┬┘                  │   │          │           │
+│    │          │    └───── 3.3V ────────┘   │          │           │
+│    │          │                            │          │           │
+│    │     DIO3 ├────┬───────────────────┬───┤A5 (SCL) │           │
+│    │    (SCL) │    │                   │   │          │           │
+│    │          │   ┌┴┐                  │   │          │           │
+│    │          │   │ │ 2.7kΩ            │   │          │           │
+│    │          │   └┬┘                  │   │          │           │
+│    │          │    └───── 3.3V ────────┘   │          │           │
+│    │          │                            │          │           │
+│    │      GND ├────────────────────────────┤GND       │           │
+│    └──────────┘                          └──────────┘           │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-### Pin Connections
+---
 
-| RSL10 Pin | Arduino Pin | Notes |
-|-----------|-------------|-------|
-| 3.3V      | 3.3V        | Use 3.3V only |
-| GND       | GND         | Common ground |
-| DIO2      | A4 (SDA)    | + 2.7kΩ pull-up |
-| DIO3      | A5 (SCL)    | + 2.7kΩ pull-up |
+## ⚠️ Logic Level Warning
 
-## Important Logic Level Note
+> **🔴 CRITICAL: Voltage mismatch can damage RSL10!**
+>
+> | Configuration | Status |
+> |---------------|:------:|
+> | Arduino powered by RSL10 3.3V | ✅ Safe |
+> | Arduino USB + RSL10 connected | ❌ Dangerous |
+> | Using level shifter (3.3V ↔ 5V) | ✅ Safe |
+> | 3.3V Arduino variant | ✅ Safe |
 
-- Arduino Nano normally uses 5V logic which can damage RSL10.
-- Power Arduino from RSL10 3.3V pin to match logic levels.
-- Do not connect Arduino USB while powered from RSL10.
-- Alternative: use a logic level shifter or a 3.3V Arduino.
+---
 
-## Quick Start
+## 🚀 Quick Start
 
-### 1. Clone Repository
+### 1️⃣ Clone Repository
 
-```
-
-git clone [https://github.com/surbalo1/RSL10-Arduino-I2C-Communication.git](https://github.com/surbalo1/RSL10-Arduino-I2C-Communication.git)
+```bash
+git clone https://github.com/surbalo1/RSL10-Arduino-I2C-Communication.git
 cd RSL10-Arduino-I2C-Communication
-
 ```
 
-### 2. Upload Arduino Code
-- Open `arduino_i2c_slave/arduino_i2c_slave.ino` in Arduino IDE.
-- Select board: Arduino Nano, select port.
-- Upload and disconnect USB after upload.
+### 2️⃣ Upload Arduino Code
 
-### 3. Setup RSL10 Project
-- Import `rsl10_i2c_master` into Eclipse IDE or preferred IDE.
-- Build project and flash to RSL10 board.
-
-### 4. Wire Hardware
-Follow wiring diagram above, connect SDA, SCL, power, and GND with pull-up resistors.
-
-### 5. Run and Monitor
-- RSL10 outputs via SEGGER RTT:
+```bash
+# Open arduino_slave/arduino_i2c_slave.ino in Arduino IDE
+# Select: Tools > Board > Arduino Nano
+# Select: Tools > Port > (your port)
+# Click Upload
+# Disconnect USB after upload
 ```
 
+### 3️⃣ Setup RSL10 Project
+
+1. Import `rsl10_master` into Eclipse IDE
+2. Build the project
+3. Flash to RSL10 using J-Link
+
+### 4️⃣ Wire Hardware
+
+Follow the wiring diagram above with pull-up resistors.
+
+### 5️⃣ Monitor Output
+
+**RSL10 (SEGGER RTT Viewer):**
+```
 TX: 0x00 ✓ | RX: 0x01 ✓
 [1] TX: 0x01 ✓ | RX: 0x02 ✓
 --- Stats: Success=10, Fail=0 ---
-
-```
-- Arduino debug output (Serial Monitor):
 ```
 
+**Arduino (Serial Monitor @ 115200):**
+```
 Listening on 0x55
 RX: 0x00 (0)
 TX: 0x01
-
 ```
 
-## Project Structure
+---
+
+## 📁 Project Structure
 
 ```
-
 RSL10-Arduino-I2C-Communication/
-├── README.md
-├── LICENSE
-├── docs/
-│   ├── wiring_guide.md
-│   └── troubleshooting.md
-├── rsl10_i2c_master/
-│   ├── include/
-│   └── source/
-├── arduino_i2c_slave/
-│   └── arduino_i2c_slave.ino
-
+├── 📄 README.md              # Documentation
+├── 📄 LICENSE                # MIT License
+│
+├── 📁 rsl10_master/          # RSL10 firmware
+│   ├── include/              # Header files
+│   │   └── i2c_hal.h         # I2C driver interface
+│   └── source/               # Source files
+│       ├── main.c            # Main application
+│       └── i2c_hal.c         # Software I2C implementation
+│
+├── 📁 arduino_slave/         # Arduino firmware
+│   └── arduino_i2c_slave.ino # I2C slave implementation
+│
+└── 📁 docs/                  # Additional documentation
+    ├── wiring_guide.md       # Detailed wiring instructions
+    └── troubleshooting.md    # Common issues & solutions
 ```
 
-## How It Works
+---
 
-1. RSL10 (master) sends a byte to Arduino at 0x55.
-2. Arduino (slave) increments the byte and sends it back.
-3. RSL10 verifies the response equals original + 1.
+## ⚙️ How It Works
 
-- Software I2C runs ~30-40 kHz.
-- Slave address is 0x55.
-- Bit-bang implementation allows flexible GPIO selection.
+### Communication Flow
 
-## Performance
+1. **RSL10 (Master)** sends a byte to Arduino at address `0x55`
+2. **Arduino (Slave)** increments the byte and stores response
+3. **RSL10** reads back the response
+4. **RSL10** verifies: `response == original + 1`
 
-- I2C speed ~30-40 kHz
-- Success rate 90%+ after initial sync
-- Recommended 100ms delay between write and read
-- Slower than hardware I2C but reliable for low-speed data
+### Technical Details
 
-## Troubleshooting
+| Parameter | Value |
+|-----------|-------|
+| **Slave Address** | `0x55` |
+| **I2C Speed** | ~30-40 kHz |
+| **Implementation** | Software bit-bang (RSL10) |
+| **Read/Write Delay** | 100ms recommended |
 
-- Check wiring, pull-ups, and common ground
-- Slow down I2C by increasing `I2C_DELAY` in `i2c_hal.c`
-- Keep wires short (<20cm)
-- Use 100nF capacitor near Arduino if needed
+---
 
-## Development
+## 📊 Performance
 
-### Requirements
-- Eclipse IDE or Keil MDK
-- ON Semiconductor RSL10 SDK
-- J-Link debugger
-- SEGGER RTT Viewer
+| Metric | Value |
+|--------|-------|
+| **I2C Clock** | 30-40 kHz |
+| **Success Rate** | 90%+ after initial sync |
+| **Recommended Delay** | 100ms between transactions |
+| **Wire Length** | <20cm recommended |
 
-### Adjusting I2C speed
-In `i2c_hal.c`, change:
+---
+
+## 🔧 Configuration
+
+### Adjust I2C Speed
+
+In `i2c_hal.c`:
+```c
+#define I2C_DELAY 250  // Higher = slower, more reliable
 ```
-
-#define I2C_DELAY 250
-
-```
-Lower value = faster, less reliable. Higher value = slower, more reliable.
 
 ### Change Slave Address
-- Arduino: `#define SLAVE_ADDRESS 0x55`
-- RSL10: `#define ARDUINO_ADDR 0x55`
 
-## License
-MIT License - see LICENSE file.
+| File | Line |
+|------|------|
+| Arduino | `#define SLAVE_ADDRESS 0x55` |
+| RSL10 | `#define ARDUINO_ADDR 0x55` |
 
-## Acknowledgments
+---
+
+## 🛠️ Development Environment
+
+| Tool | Purpose |
+|------|---------|
+| **Eclipse IDE** | RSL10 development |
+| **RSL10 SDK** | ON Semiconductor libraries |
+| **J-Link** | Debugging & flashing |
+| **SEGGER RTT** | Debug output |
+| **Arduino IDE** | Arduino programming |
+
+---
+
+## 🐛 Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| No communication | Check wiring, pull-ups, common ground |
+| Intermittent failures | Increase `I2C_DELAY`, shorten wires |
+| NACK on all addresses | Verify slave address matches |
+| Noisy signal | Add 100nF capacitor near Arduino |
+
+---
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file.
+
+---
+
+## 🙏 Acknowledgments
+
 - ON Semiconductor RSL10 SDK
-- Arduino community
-- Open-source I2C examples
+- Arduino Wire library
+- Open-source I2C community
 
-## Support
-- GitHub Issues: https://github.com/surbalo1/RSL10-Arduino-I2C-Communication/issues
-- Email: surbalo1@gmail.com
+---
 
-## Version History
-- v1.0.0 (2025-10-13): initial release, software I2C, bidirectional communication, tested
-```
+<div align="center">
+
+**Built with ⚡ for embedded systems enthusiasts**
+
+[![GitHub](https://img.shields.io/badge/Star_on_GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/surbalo1/RSL10-Arduino-I2C-Communication)
+
+</div>
